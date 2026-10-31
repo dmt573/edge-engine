@@ -1,0 +1,14 @@
+{
+  "name": "edge-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Minimal local starter for edge-engine.",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "health": "node index.js"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
