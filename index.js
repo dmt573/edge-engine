@@ -1,7 +1,12 @@
 'use strict';
 
-const { getHealth } = require('./src/health');
+const { runCommand } = require('./src/commands');
 
-const health = getHealth();
-console.log(JSON.stringify(health, null, 2));
-process.exitCode = health.status === 'ok' ? 0 : 1;
+runCommand(process.argv.slice(2)).catch((error) => {
+  console.error(JSON.stringify({
+    status: 'error',
+    message: error.message,
+    hint: 'Check the command arguments and internet connection. No trades or external actions were performed.',
+  }, null, 2));
+  process.exitCode = 1;
+});
