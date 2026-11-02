@@ -1,12 +1,16 @@
 {
   "name": "edge-engine",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Minimal local starter for edge-engine.",
+  "description": "Read-only evidence ingestion and opportunity research foundation.",
   "type": "commonjs",
   "scripts": {
     "start": "node index.js",
-    "health": "node index.js"
+    "health": "node index.js health",
+    "discover": "node index.js discover",
+    "regulations": "node index.js regulations",
+    "report": "node index.js report",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=22"
