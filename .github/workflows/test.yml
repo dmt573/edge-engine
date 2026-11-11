@@ -2,9 +2,10 @@ name: test
 
 on:
   push:
-    branches: [main, foundation-v0.2]
+    branches: [main, foundation-v0.2, wealth-system-v0.1]
   pull_request:
-    branches: [main]
+    branches: [main, foundation-v0.2, wealth-system-v0.1]
+  workflow_dispatch:
 
 jobs:
   node-tests:

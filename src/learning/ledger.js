@@ -68,8 +68,6 @@ function projectEvents(events) {
 }
 
 async function addOpportunity(input, filePath = DEFAULT_LEDGER_FILE) {
-  const events = await readEvents(filePath);
-  const state = projectEvents(events);
   const id = `opp-${randomUUID().slice(0, 8)}`;
   const payload = {
     id,
@@ -108,13 +106,18 @@ async function logForecast(input, filePath = DEFAULT_LEDGER_FILE) {
   if (!state.opportunities.some((item) => item.id === opportunityId)) throw new Error(`Opportunity not found: ${opportunityId}`);
   const probability = Number(input.probability);
   if (!Number.isFinite(probability) || probability < 0 || probability > 1) throw new Error('Probability must be between 0 and 1.');
+  let benchmark = null;
+  if (input.benchmark !== undefined && input.benchmark !== null && input.benchmark !== '') {
+    benchmark = Number(input.benchmark);
+    if (!Number.isFinite(benchmark) || benchmark < 0 || benchmark > 1) throw new Error('Benchmark probability must be between 0 and 1.');
+  }
   const payload = {
     id: `fcst-${randomUUID().slice(0, 8)}`,
     opportunityId,
     question: requiredText(input.question, 'Forecast question'),
     probability,
     horizon: requiredText(input.horizon, 'Forecast horizon'),
-    benchmark: input.benchmark || null,
+    benchmark,
     sourceCutoff: input.sourceCutoff || new Date().toISOString(),
   };
   await appendEvent(makeEvent('forecast.logged', payload), filePath);
@@ -163,6 +166,10 @@ function buildReport(events) {
   const brierScore = resolved.length
     ? resolved.reduce((sum, item) => sum + (item.probability - (item.outcome === 'yes' ? 1 : 0)) ** 2, 0) / resolved.length
     : null;
+  const benchmarkResolved = resolved.filter((item) => Number.isFinite(item.benchmark));
+  const benchmarkBrierScore = benchmarkResolved.length
+    ? benchmarkResolved.reduce((sum, item) => sum + (item.benchmark - (item.outcome === 'yes' ? 1 : 0)) ** 2, 0) / benchmarkResolved.length
+    : null;
   const finances = {};
   for (const item of state.cashflows) {
     const bucket = finances[item.currency] ||= { earned: 0, refunds: 0, expenses: 0, excludedFlows: 0, entries: 0 };
@@ -186,8 +193,10 @@ function buildReport(events) {
       unresolved: state.forecasts.length - resolved.length,
       resolved: resolved.length,
       brierScore: brierScore === null ? null : Math.round(brierScore * 10000) / 10000,
+      benchmarkBrierScore: benchmarkBrierScore === null ? null : Math.round(benchmarkBrierScore * 10000) / 10000,
+      benchmarkSampleSize: benchmarkResolved.length,
       items: state.forecasts,
-      note: 'Brier score is meaningful only for clearly defined, timestamped binary forecasts with consistently recorded outcomes. Lower is better; compare against a base-rate benchmark.',
+      note: 'Brier score is meaningful only for clearly defined, timestamped binary forecasts with consistently recorded outcomes. Lower is better; compare the same resolved sample against its base-rate benchmark.',
     },
     finances: {
       byCurrency: finances,

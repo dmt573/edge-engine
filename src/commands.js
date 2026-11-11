@@ -31,8 +31,10 @@ function print(value) {
 }
 
 async function runCommand(argv) {
-  const [command = 'help', subcommand, ...rest] = argv;
-  const args = subcommand ? rest : [];
+  const [command = 'help', ...remaining] = argv;
+  const hasSubcommand = remaining.length > 0 && !remaining[0].startsWith('--');
+  const subcommand = hasSubcommand ? remaining[0] : undefined;
+  const args = hasSubcommand ? remaining.slice(1) : remaining;
   const opts = options(args);
 
   if (command === 'health') {
@@ -69,8 +71,7 @@ async function runCommand(argv) {
       return;
     }
     if (subcommand === 'list') {
-      const report = buildReport(await readEvents());
-      print(report.opportunities);
+      print(buildReport(await readEvents()).opportunities);
       return;
     }
     if (subcommand === 'update') {

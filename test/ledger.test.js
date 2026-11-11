@@ -29,12 +29,13 @@ test('forecasts require a real opportunity and valid probability, then resolve o
   const file = await temporaryLedger(t);
   const opportunity = await addOpportunity({ title: 'Test', thesis: 'Test thesis', domain: 'stocks' }, file);
   await assert.rejects(logForecast({ opportunityId: opportunity.id, question: 'Will it happen?', probability: 1.2, horizon: '1 day' }, file), /between 0 and 1/);
-  const forecast = await logForecast({ opportunityId: opportunity.id, question: 'Will it happen?', probability: 0.7, horizon: '1 day' }, file);
+  const forecast = await logForecast({ opportunityId: opportunity.id, question: 'Will it happen?', probability: 0.7, horizon: '1 day', benchmark: 0.4 }, file);
   await resolveForecast(forecast.id, 'yes', file);
   await assert.rejects(resolveForecast(forecast.id, 'no', file), /already resolved/);
   const report = buildReport(await readEvents(file));
   assert.equal(report.forecasts.resolved, 1);
   assert.equal(report.forecasts.brierScore, 0.09);
+  assert.equal(report.forecasts.benchmarkBrierScore, 0.36);
 });
 
 test('cashflow separates earned income and expenses from transfers and capital', async (t) => {
@@ -53,4 +54,10 @@ test('cashflow requires a positive amount and valid classification', async (t) =
   const file = await temporaryLedger(t);
   await assert.rejects(recordCashflow({ type: 'receipt', amount: -1, description: 'Bad' }, file), /positive number/);
   await assert.rejects(recordCashflow({ type: 'mystery', amount: 10, description: 'Bad' }, file), /Cashflow type must be one of/);
+});
+
+test('forecast benchmark probability must also be in range', async (t) => {
+  const file = await temporaryLedger(t);
+  const opportunity = await addOpportunity({ title: 'Test', thesis: 'Test thesis', domain: 'crypto' }, file);
+  await assert.rejects(logForecast({ opportunityId: opportunity.id, question: 'Will it happen?', probability: 0.5, horizon: '1 day', benchmark: 1.1 }, file), /Benchmark probability must be between 0 and 1/);
 });
