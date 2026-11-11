@@ -1,8 +1,8 @@
 {
   "name": "edge-engine",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
-  "description": "Read-only evidence ingestion and opportunity research foundation.",
+  "description": "Read-only market intelligence and personal opportunity learning system.",
   "type": "commonjs",
   "scripts": {
     "start": "node index.js",
@@ -10,6 +10,10 @@
     "discover": "node index.js discover",
     "regulations": "node index.js regulations",
     "report": "node index.js report",
+    "opportunity": "node index.js opportunity",
+    "forecast": "node index.js forecast",
+    "cashflow": "node index.js cashflow",
+    "ledger": "node index.js ledger",
     "test": "node --test"
   },
   "engines": {
