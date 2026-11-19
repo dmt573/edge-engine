@@ -57,7 +57,12 @@ async function handleApi(request, response, url) {
 
   if (request.method === 'GET' && url.pathname === '/api/forecasts') {
     const forecasts = await readForecasts();
-    return sendJson(response, 200, { forecasts, brier_score: brierScore(forecasts), resolved_count: forecasts.filter((f) => f.resolved_outcome === 0 || f.resolved_outcome === 1).length });
+    return sendJson(response, 200, {
+      forecasts,
+      brier_score: brierScore(forecasts),
+      market_brier_score: brierScore(forecasts, 'market_probability_at_entry'),
+      resolved_count: forecasts.filter((f) => f.resolved_outcome === 0 || f.resolved_outcome === 1).length
+    });
   }
 
   if (request.method === 'POST' && url.pathname === '/api/forecasts') {
@@ -84,7 +89,12 @@ async function handleApi(request, response, url) {
     if (body.outcome !== 0 && body.outcome !== 1) return sendJson(response, 400, { error: 'Outcome must be 0 (No) or 1 (Yes).' });
     const item = await resolveForecast(resolveMatch[1], body.outcome);
     if (!item) return sendJson(response, 404, { error: 'Forecast not found.' });
-    return sendJson(response, 200, { forecast: item, brier_score: brierScore(await readForecasts()) });
+    const forecasts = await readForecasts();
+    return sendJson(response, 200, {
+      forecast: item,
+      brier_score: brierScore(forecasts),
+      market_brier_score: brierScore(forecasts, 'market_probability_at_entry')
+    });
   }
 
   return sendJson(response, 404, { error: 'API route not found.' });
