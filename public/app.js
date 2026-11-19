@@ -55,6 +55,7 @@ async function loadForecasts() {
   const data = await api('/api/forecasts');
   $('#resolved-count').textContent = number(data.resolved_count);
   $('#brier-score').textContent = data.brier_score === null ? '—' : data.brier_score.toFixed(4);
+  $('#market-brier-score').textContent = data.market_brier_score === null ? '—' : data.market_brier_score.toFixed(4);
   if (!data.forecasts.length) {
     $('#forecast-list').innerHTML = '<p class="empty">No forecasts recorded.</p>';
     return;
