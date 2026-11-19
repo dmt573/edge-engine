@@ -3,3 +3,5 @@
 !.env.example
 node_modules/
 *.log
+data/forecasts.json
+data/forecasts.json.tmp
