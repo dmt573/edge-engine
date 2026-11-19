@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edge Engine — Evidence Lab</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">READ-ONLY RESEARCH SYSTEM</p>
+      <h1>Edge Engine <span>Evidence Lab</span></h1>
+    </div>
+    <div class="status"><span class="dot"></span> Paper research only</div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div>
+        <h2>Find the connection. Test the consequence.</h2>
+        <p>Compare public prediction-market listings with recent U.S. Federal Register documents. Record forecasts and measure accuracy before risking capital.</p>
+      </div>
+      <button id="scan-button">Scan public sources</button>
+    </section>
+
+    <section class="metrics">
+      <article><span>Markets fetched</span><strong id="market-count">—</strong></article>
+      <article><span>Public documents</span><strong id="document-count">—</strong></article>
+      <article><span>Keyword matches</span><strong id="match-count">—</strong></article>
+      <article><span>Resolved forecasts</span><strong id="resolved-count">0</strong></article>
+      <article><span>Brier score</span><strong id="brier-score">—</strong></article>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading">
+        <div><p class="eyebrow">EVIDENCE RADAR</p><h2>Market ↔ public-record matches</h2></div>
+        <span id="fetched-at" class="muted">Not scanned yet</span>
+      </div>
+      <p class="notice">A keyword match is a research lead, not proof of causation, an informational advantage, or a profitable trade.</p>
+      <div id="errors" class="errors" hidden></div>
+      <div id="matches" class="match-list"><p class="empty">Run a scan to collect current public data.</p></div>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading"><div><p class="eyebrow">PAPER FORECAST LEDGER</p><h2>Test a hypothesis</h2></div></div>
+      <form id="forecast-form">
+        <label>Market ticker<input name="market_ticker" required maxlength="120" placeholder="Kalshi market ticker"></label>
+        <label>Market title<input name="market_title" required maxlength="500" placeholder="What is the market asking?"></label>
+        <div class="form-row">
+          <label>Market probability at entry (%)<input name="market_probability" type="number" min="0" max="100" step="0.1" placeholder="Leave blank if unknown"></label>
+          <label>Your forecast probability (%)<input name="forecast_probability" type="number" min="0" max="100" step="0.1" required placeholder="0–100"></label>
+        </div>
+        <label>Thesis and evidence<textarea name="thesis" required rows="3" maxlength="5000" placeholder="What do you believe will happen, why, and by when?"></textarea></label>
+        <button type="submit">Save paper forecast</button>
+      </form>
+      <div id="forecast-list" class="forecast-list"><p class="empty">No forecasts recorded.</p></div>
+    </section>
+
+    <footer>
+      <p>Data sources: Kalshi public market data and U.S. Federal Register API. Forecast outcomes are entered manually. No brokerage, exchange account, wallet, or trading key is connected.</p>
+      <p id="app-health" class="muted">Checking local application…</p>
+    </footer>
+  </main>
+  <script src="/app.js" defer></script>
+</body>
+</html>
