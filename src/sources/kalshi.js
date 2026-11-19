@@ -35,7 +35,7 @@ async function fetchOpenMarkets(limit = 100) {
       open_interest: Number(market.open_interest_fp ?? market.open_interest ?? 0) || 0,
       close_time: market.close_time || null,
       rules_primary: market.rules_primary || '',
-      url: market.url || (market.ticker ? `https://kalshi.com/markets/${encodeURIComponent(market.ticker)}` : '')
+      url: market.url || ''
     };
   });
 }
