@@ -1,67 +1,79 @@
-# edge-engine
+# Edge Engine — Evidence Lab
 
-A small, dependency-free Node.js starter that is easy to extend.
+A dependency-free Node.js research application that compares public Kalshi market listings with recent U.S. Federal Register documents, records manual probability forecasts, and measures forecast accuracy.
 
-**Current status:** placeholder only. The health command checks that the local
-runtime is supported and the starter can load. It does not fetch market data,
-produce signals, simulate returns, or place trades. An `ok` result confirms only
-this local check; it says nothing about an exchange, account, or strategy.
+**Current scope:** read-only market and public-record research plus a local paper-forecast ledger. It does not place trades, connect exchange accounts or wallets, estimate a proven trading edge, or guarantee that a keyword match is economically meaningful.
 
-## Local setup
+## Requirements
 
-Install [Node.js](https://nodejs.org/) 22 or newer and [Git](https://git-scm.com/).
-Then run these commands in Terminal or PowerShell:
+- Node.js 22 or newer
+- Internet connection for public data-source scans
+- No npm packages, API keys, paid data subscriptions, brokerage accounts, or wallet connections
+
+## Run locally
 
 ```sh
 git clone https://github.com/dmt573/edge-engine.git
 cd edge-engine
-node --version
 npm run health
+npm start
 ```
 
-There are no dependencies to install, API keys to enter, or accounts to connect.
-If you already cloned the repository, update your clean checkout with
-`git pull --ff-only` instead of cloning again.
+Open http://127.0.0.1:3000 in your browser.
 
-The command prints JSON containing `status: "ok"`, `scope: "local-runtime"`,
-`mode: "placeholder"`, and your Node.js version. It exits with code 0 on success
-or 1 for an unsupported runtime. `npm start` and `node index.js` run the same
-one-shot check; they exit afterward and do not start a server or monitor.
+If you already cloned the repository, update your clean checkout with:
 
-If `node` or `npm` is not recognized, install Node.js and reopen the terminal.
-If your Node.js version is below 22, upgrade it before continuing.
+```sh
+git pull --ff-only origin research/read-only-signal-lab
+```
 
-## Minimal layout
+To run the tests:
+
+```sh
+npm test
+```
+
+## What it does
+
+1. **Kalshi public market data:** requests up to 100 open markets from the public REST API.
+2. **Federal Register:** retrieves up to 50 recent public documents.
+3. **Evidence radar:** finds market/document pairs with at least two overlapping meaningful keywords. The score is a simple ranking heuristic, not an AI conclusion, causal relationship, or trading signal.
+4. **Paper forecast ledger:** lets you record your probability estimate, the market's probability at entry (if available), and your written thesis.
+5. **Calibration:** when an event resolves, manually record YES or NO. The app calculates the Brier score across resolved forecasts. Lower is better; 0 is perfect and 1 is worst.
+
+Forecast records are saved locally in data/forecasts.json, which is ignored by Git.
+
+## Data sources
+
+- Kalshi API: https://docs.kalshi.com/
+- Federal Register API: https://www.federalregister.gov/developers/documentation/api/v1
+
+The app displays the source links and fetch timestamp. Availability, field names, limits, and API behavior can change. A failed source is reported separately so the other source can still be used.
+
+## Important interpretation limits
+
+- Keyword overlap can produce false positives and miss real relationships.
+- A public filing or announcement does not automatically affect a market or asset price.
+- Market probabilities can be affected by thin liquidity, spreads, fees, and rapidly changing information.
+- Forecast calibration is not the same as trading profitability.
+- The ledger does not currently calculate realized returns, fees, slippage, executable fills, or out-of-sample strategy performance.
+- Outcomes are manually entered; verify settlement rules before resolving a forecast.
+- No live trading, account connection, wallet connection, or automated order execution exists in this version.
+
+## Project layout
 
 | Path | Purpose |
 | --- | --- |
-| `README.md` | Setup, scope, and open decisions |
-| `package.json` | Project metadata and runnable commands |
-| `index.js` | Command entry point: print health and set exit status |
-| `src/health.js` | Local health result; first small application module |
-| `.gitignore` | Exclude local secrets, dependencies, and logs |
+| index.js | Starts the local dashboard or runs the health check |
+| src/server.js | HTTP server and API routes |
+| src/sources/kalshi.js | Public Kalshi market-data reader |
+| src/sources/federal-register.js | Federal Register document reader |
+| src/scoring.js | Keyword matching and Brier score |
+| src/store.js | Local paper-forecast storage |
+| public/ | Browser dashboard |
+| test/ | Automated unit tests |
+| data/forecasts.json | Local forecast history, created at runtime |
 
-Keep command wiring in `index.js` and add application modules under `src/` as
-needed. No framework, database, or hosted service is required for this starter.
+## Next validation milestone
 
-## Decisions needing Devin's input
-
-These remain open; the starter does not choose them:
-
-- **First useful task:** what exact question should the engine answer?
-- **Market and data source:** which market/provider should the first read-only
-  connection use, and what free access or spending limit is available?
-- **Output:** terminal report, saved file, or a later dashboard?
-- **Run location and frequency:** manual laptop runs or a later scheduled host?
-- **Future trading scope:** remain read-only, add paper trading, or consider live
-  execution later? Live execution requires a separate explicit decision and risk
-  limits. Nothing here enables it.
-
-The next implementation should be one read-only data connection with a clear
-expected output, once the first task and provider are selected.
-
-## Secrets
-
-This repository is public. Never commit credentials or private account data.
-Local `.env` files are ignored, but the starter does not load them and needs no
-configuration. Add configuration only when a specific integration needs it.
+Do not add paid data feeds or live trading until the paper ledger contains enough timestamped forecasts to evaluate calibration, baseline comparisons, and whether any signal produces a repeatable advantage after realistic fees and execution assumptions.
