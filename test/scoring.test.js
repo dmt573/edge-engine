@@ -24,3 +24,11 @@ test('Brier score is mean squared probability error', () => {
 test('Brier score is null before any forecasts resolve', () => {
   assert.equal(brierScore([{ forecast_probability: 0.8, resolved_outcome: null }]), null);
 });
+
+test('market baseline score excludes forecasts without an entry probability', () => {
+  const rows = [
+    { forecast_probability: 0.8, market_probability_at_entry: 0.6, resolved_outcome: 1 },
+    { forecast_probability: 0.3, market_probability_at_entry: null, resolved_outcome: 0 }
+  ];
+  assert.equal(brierScore(rows, 'market_probability_at_entry'), 0.16);
+});
