@@ -47,10 +47,15 @@ function matchEvidence(markets, documents) {
   return matches.sort((a, b) => b.score - a.score).slice(0, 100);
 }
 
-function brierScore(forecasts) {
-  const resolved = forecasts.filter((item) => item.resolved_outcome === 0 || item.resolved_outcome === 1);
+function brierScore(forecasts, probabilityField = 'forecast_probability') {
+  const resolved = forecasts.filter((item) =>
+    (item.resolved_outcome === 0 || item.resolved_outcome === 1) &&
+    Number.isFinite(item[probabilityField]) &&
+    item[probabilityField] >= 0 &&
+    item[probabilityField] <= 1
+  );
   if (!resolved.length) return null;
-  const total = resolved.reduce((sum, item) => sum + Math.pow(item.forecast_probability - item.resolved_outcome, 2), 0);
+  const total = resolved.reduce((sum, item) => sum + Math.pow(item[probabilityField] - item.resolved_outcome, 2), 0);
   return Number((total / resolved.length).toFixed(4));
 }
 
