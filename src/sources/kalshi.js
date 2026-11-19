@@ -2,11 +2,15 @@
 
 const BASE = 'https://external-api.kalshi.com/trade-api/v2';
 
-async function fetchOpenMarkets(limit = 100) {
-  const url = new URL('/markets', BASE);
+function buildMarketsUrl(limit = 100) {
+  const url = new URL(`${BASE}/markets`);
   url.searchParams.set('limit', String(Math.min(Math.max(Number(limit) || 100, 1), 200)));
   url.searchParams.set('status', 'open');
+  return url;
+}
 
+async function fetchOpenMarkets(limit = 100) {
+  const url = buildMarketsUrl(limit);
   const response = await fetch(url, {
     headers: { accept: 'application/json', 'user-agent': 'edge-engine/0.2 read-only research' },
     signal: AbortSignal.timeout(12000)
@@ -52,4 +56,4 @@ function centsOrDollars(dollarValue, centsValue) {
   return null;
 }
 
-module.exports = { fetchOpenMarkets, centsOrDollars };
+module.exports = { fetchOpenMarkets, buildMarketsUrl, centsOrDollars };
