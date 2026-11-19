@@ -13,7 +13,7 @@ A dependency-free Node.js research application that compares public Kalshi marke
 ## Run locally
 
 ```sh
-git clone https://github.com/dmt573/edge-engine.git
+git clone --branch research/read-only-signal-lab https://github.com/dmt573/edge-engine.git
 cd edge-engine
 npm run health
 npm start
@@ -24,7 +24,8 @@ Open http://127.0.0.1:3000 in your browser.
 If you already cloned the repository, update your clean checkout with:
 
 ```sh
-git pull --ff-only origin research/read-only-signal-lab
+git fetch origin
+git switch --track origin/research/read-only-signal-lab
 ```
 
 To run the tests:
