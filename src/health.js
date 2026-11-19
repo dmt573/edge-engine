@@ -1,18 +1,18 @@
 'use strict';
 
-// Local runtime check only. Add data-source checks after a provider is chosen.
+// Local runtime check only; it does not test external data providers.
 function getHealth() {
   const supported = Number(process.versions.node.split('.')[0]) >= 22;
-
   return {
     project: 'edge-engine',
     status: supported ? 'ok' : 'error',
     scope: 'local-runtime',
-    mode: 'placeholder',
+    mode: 'read-only-paper-research',
+    trading_enabled: false,
     node: process.version,
     message: supported
-      ? 'Starter runs locally. No market data or trading is connected.'
-      : 'Node.js 22 or newer is required.',
+      ? 'Local runtime is supported. Start the app to test public data providers.'
+      : 'Node.js 22 or newer is required.'
   };
 }
 
